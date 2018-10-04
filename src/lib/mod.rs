@@ -1,1 +1,2 @@
-pub mod memory_block;
+pub mod memory;
+pub mod instructions;
