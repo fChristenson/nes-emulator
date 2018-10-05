@@ -1,15 +1,30 @@
-use lib::memory::{MemoryAddress, Memory};
+use lib::memory::Memory;
 
-pub type CPUCycles = u8;
+pub enum InstructionType {
+  LDA,
+}
 
 pub enum AddressingMode {
   Immediate,
-  ZeroPage
+  ZeroPage,
 }
 
-pub trait Instruction {
-  mode: AddressingMode;
-  parameter: MemoryAddress;
-  operation: (&self, memory: &mut Memory);
-  cycles: CPUCycles;
+pub struct Instruction {
+  instruction_type: InstructionType,
+  addressingMode: AddressingMode,
+  operation: Box<Fn(&Instruction, &mut Memory, u8)>,
+}
+
+impl Instruction {
+  fn new(
+    instruction_type: InstructionType,
+    addressingMode: AddressingMode,
+    operation: Box<Fn(&Instruction, &mut Memory, u8)>,
+  ) -> Instruction {
+    Instruction {
+      instruction_type: instruction_type,
+      addressingMode: addressingMode,
+      operation: operation,
+    }
+  }
 }
