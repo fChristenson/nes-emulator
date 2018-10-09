@@ -1,7 +1,5 @@
-use lib::memory::Byte;
-
 pub struct Cpu {
-  pub x: Byte,
-  pub y: Byte,
-  pub acc: Byte
+  pub x: u8,
+  pub y: u8,
+  pub acc: u8,
 }

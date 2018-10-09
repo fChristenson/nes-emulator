@@ -1,11 +1,7 @@
 const MEMORY_SIZE: usize = 65535;
 
-pub type MemoryAddress = u8;
-pub type Byte = u8;
-type MemoryBlock = [Byte; MEMORY_SIZE];
-
 pub struct Memory {
-  memory_block: MemoryBlock,
+  memory_block: [u8; MEMORY_SIZE],
 }
 
 impl Memory {
@@ -15,11 +11,11 @@ impl Memory {
     }
   }
 
-  pub fn write(&mut self, address: MemoryAddress, value: Byte) {
+  pub fn write(&mut self, address: u8, value: u8) {
     self.memory_block[address as usize] = value;
   }
 
-  pub fn read(&mut self, address: MemoryAddress) -> Byte {
+  pub fn read(&mut self, address: u8) -> u8 {
     self.memory_block[address as usize]
   }
 }
