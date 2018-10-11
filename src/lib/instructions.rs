@@ -153,7 +153,7 @@ impl Instruction {
         }
       }
       AddressingMode::Accumulator => Parameter {
-        value: cpu.acc,
+        value: cpu.a,
         address: low_address,
         extra_cycles: 0,
       },

@@ -1,4 +1,4 @@
-const MEMORY_SIZE: usize = 65535;
+const MEMORY_SIZE: usize = 0xFFFF;
 
 pub struct Memory {
   memory_block: [u8; MEMORY_SIZE],
