@@ -1,7 +1,10 @@
 use lib::cpu::Cpu;
+use lib::instruction_operations::*;
 use lib::memory::Memory;
+use lib::parameter::Parameter;
 
 pub enum InstructionType {
+  ADC,
   LDA,
 }
 
@@ -30,40 +33,74 @@ pub struct Instruction {
   operation: Box<Fn(&Cpu, u8, &Parameter) -> u8>,
 }
 
-pub struct Parameter {
-  value: u8,
-  address: u8,
-  extra_cycles: u8,
-}
-
 impl Instruction {
-  pub fn new(
-    instruction_type: InstructionType,
-    addressing_mode: AddressingMode,
-    operation: Box<Fn(&Cpu, u8, &Parameter) -> u8>,
-  ) -> Instruction {
-    let byte_size = match addressing_mode {
-      AddressingMode::Accumulator | AddressingMode::Implicit => 1,
-      AddressingMode::Immediate
-      | AddressingMode::ZeroPage
-      | AddressingMode::ZeroPageX
-      | AddressingMode::ZeroPageY
-      | AddressingMode::IndexedIndirect
-      | AddressingMode::IndirectIndexed
-      | AddressingMode::Relative => 2,
-      AddressingMode::Absolute
-      | AddressingMode::AbsoluteX
-      | AddressingMode::AbsoluteY
-      | AddressingMode::Indirect => 3,
-    };
-
-    Instruction {
-      byte_size: byte_size,
-      cycles: 0,
-      op_code: 0,
-      instruction_type: instruction_type,
-      addressing_mode: addressing_mode,
-      operation: operation,
+  pub fn adc(addressing_mode: AddressingMode) -> Instruction {
+    match addressing_mode {
+      AddressingMode::Immediate => Instruction {
+        op_code: 0x69,
+        cycles: 2,
+        byte_size: 2,
+        instruction_type: InstructionType::ADC,
+        addressing_mode: AddressingMode::Immediate,
+        operation: Box::new(adc_immediate_logic),
+      },
+      AddressingMode::ZeroPage => Instruction {
+        op_code: 0x65,
+        cycles: 3,
+        byte_size: 2,
+        instruction_type: InstructionType::ADC,
+        addressing_mode: AddressingMode::ZeroPage,
+        operation: Box::new(adc_zero_page_logic),
+      },
+      AddressingMode::ZeroPageX => Instruction {
+        op_code: 0x75,
+        cycles: 4,
+        byte_size: 2,
+        instruction_type: InstructionType::ADC,
+        addressing_mode: AddressingMode::ZeroPageX,
+        operation: Box::new(adc_zero_page_x_logic),
+      },
+      AddressingMode::Absolute => Instruction {
+        op_code: 0x6D,
+        cycles: 4,
+        byte_size: 3,
+        instruction_type: InstructionType::ADC,
+        addressing_mode: AddressingMode::Absolute,
+        operation: Box::new(adc_absolute_logic),
+      },
+      AddressingMode::AbsoluteX => Instruction {
+        op_code: 0x7D,
+        cycles: 4,
+        byte_size: 3,
+        instruction_type: InstructionType::ADC,
+        addressing_mode: AddressingMode::AbsoluteX,
+        operation: Box::new(adc_absolute_x_logic),
+      },
+      AddressingMode::AbsoluteY => Instruction {
+        op_code: 0x79,
+        cycles: 4,
+        byte_size: 3,
+        instruction_type: InstructionType::ADC,
+        addressing_mode: AddressingMode::AbsoluteX,
+        operation: Box::new(adc_absolute_x_logic),
+      },
+      AddressingMode::IndexedIndirect => Instruction {
+        op_code: 0x79,
+        cycles: 6,
+        byte_size: 2,
+        instruction_type: InstructionType::ADC,
+        addressing_mode: AddressingMode::IndexedIndirect,
+        operation: Box::new(adc_absolute_x_logic),
+      },
+      AddressingMode::IndirectIndexed => Instruction {
+        op_code: 0x71,
+        cycles: 5,
+        byte_size: 2,
+        instruction_type: InstructionType::ADC,
+        addressing_mode: AddressingMode::IndirectIndexed,
+        operation: Box::new(adc_absolute_x_logic),
+      },
+      _ => panic!("Illegal addressing mode passed"),
     }
   }
 
